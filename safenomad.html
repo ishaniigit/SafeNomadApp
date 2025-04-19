@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <link rel="stylesheet" href="styles.css" />
+  <title>SafeNomad Web</title>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React & Babel CDN -->
+  <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+  <!-- App Code -->
+  <script type="text/babel">
+    function SafeNomadApp() {
+      const [location, setLocation] = React.useState(null);
+      const [errorMsg, setErrorMsg] = React.useState(null);
+
+      React.useEffect(() => {
+        if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              setLocation({ latitude, longitude });
+            },
+            (error) => {
+              setErrorMsg(error.message);
+            }
+          );
+        } else {
+          setErrorMsg("Geolocation not available");
+        }
+      }, []);
+
+      const handleSOS = () => {
+        window.location.href = "tel:112";
+      };
+
+      return (
+        <div>
+          <div className="title">SafeNomad Web</div>
+          <div className="subtitle">Your travel safety companion</div>
+
+          <div className="location">
+            {location ? (
+              <p>Location: {location.latitude}, {location.longitude}</p>
+            ) : (
+              <p>{errorMsg || "Fetching location..."}</p>
+            )}
+          </div>
+
+          <button onClick={handleSOS}>Send SOS</button>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<SafeNomadApp />, document.getElementById('root'));
+  </script>
+</body>
+</html>
